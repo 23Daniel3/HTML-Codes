@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Jogo do Dinossauro</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f7f7f7;
+        }
+        .game-container {
+            position: relative;
+            width: 600px;
+            height: 200px;
+            overflow: hidden;
+            background-color: #fff;
+            border: 1px solid #d3d3d3;
+        }
+        .dino {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            bottom: 0;
+            background-color: black;
+        }
+        .obstacle {
+            position: absolute;
+            width: 20px;
+            height: 40px;
+            right: 0;
+            bottom: 0;
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="dino" id="dino"></div>
+        <div class="obstacle" id="obstacle"></div>
+    </div>
+
+    <script>
+        const dino = document.getElementById('dino');
+        const obstacle = document.getElementById('obstacle');
+        let isJumping = false;
+        let gameSpeed = 5;
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === " ") {
+                if (!isJumping) {
+                    jump();
+                }
+            }
+        });
+
+        function jump() {
+            let position = 0;
+            isJumping = true;
+            const upInterval = setInterval(() => {
+                if (position >= 150) {
+                    clearInterval(upInterval);
+
+                    const downInterval = setInterval(() => {
+                        if (position <= 0) {
+                            clearInterval(downInterval);
+                            isJumping = false;
+                        } else {
+                            position -= 10;
+                            dino.style.bottom = position + 'px';
+                        }
+                    }, 20);
+                } else {
+                    position += 10;
+                    dino.style.bottom = position + 'px';
+                }
+            }, 20);
+        }
+
+        function moveObstacle() {
+            let obstacleLeft = 600;
+            const timerId = setInterval(() => {
+                if (obstacleLeft < -20) {
+                    clearInterval(timerId);
+                    obstacleLeft = 600;
+                } else if (obstacleLeft > 0 && obstacleLeft < 40 && dino.style.bottom === '0px') {
+                    alert("Game over!");
+                    clearInterval(timerId);
+                    location.reload(); // Reload the game
+                }
+                obstacleLeft -= gameSpeed;
+                obstacle.style.right = (600 - obstacleLeft) + 'px';
+            }, 20);
+        }
+
+        moveObstacle();
+    </script>
+</body>
+</html>

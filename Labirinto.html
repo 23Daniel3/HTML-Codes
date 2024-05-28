@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Jogo de Labirinto</title>
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background: #f0f0f0;
+        font-family: Arial, sans-serif;
+    }
+    #mazeCanvas {
+        background-color: #fff;
+        border: 1px solid #000;
+    }
+</style>
+</head>
+<body>
+<canvas id="mazeCanvas" width="400" height="400"></canvas>
+<script>
+    const canvas = document.getElementById('mazeCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const playerSize = 20;
+    let playerX = playerSize;
+    let playerY = playerSize;
+    const walls = [
+        {x: 80, y: 0, width: 20, height: 300},
+        {x: 200, y: 100, width: 20, height: 300}
+    ];
+
+    function drawMaze() {
+        ctx.fillStyle = '#000';
+        walls.forEach(wall => {
+            ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
+        });
+    }
+
+    function drawPlayer() {
+        ctx.fillStyle = '#00F';
+        ctx.fillRect(playerX, playerY, playerSize, playerSize);
+    }
+
+    function clearCanvas() {
+        ctx.fillStyle = '#FFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    document.addEventListener('keydown', function(e) {
+        let newX = playerX;
+        let newY = playerY;
+        switch (e.key) {
+            case 'ArrowUp': newY -= 20; break;
+            case 'ArrowDown': newY += 20; break;
+            case 'ArrowLeft': newX -= 20; break;
+            case 'ArrowRight': newX += 20; break;
+        }
+
+        if (!isColliding(newX, newY)) {
+            playerX = newX;
+            playerY = newY;
+            redraw();
+        }
+    });
+
+    function isColliding(x, y) {
+        if (x < 0 || x + playerSize > canvas.width || y < 0 || y + playerSize > canvas.height) {
+            return true;
+        }
+        return walls.some(wall => x < wall.x + wall.width && x + playerSize > wall.x && y < wall.y + wall.height && y + playerSize > wall.y);
+    }
+
+    function redraw() {
+        clearCanvas();
+        drawMaze();
+        drawPlayer();
+        checkWin();
+    }
+
+    function checkWin() {
+        if (playerX >= 360 && playerY >= 360) {
+            alert('Parabéns! Você encontrou a saída do labirinto!');
+            playerX = playerSize;
+            playerY = playerSize;
+            redraw();
+        }
+    }
+
+    drawMaze();
+    drawPlayer();
+</script>
+</body>
+</html>
